@@ -1,0 +1,43 @@
+{
+  "name": "class-validator-is-nullable",
+  "version": "0.8.5",
+  "description": "@IsNullable validator for class-validator",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "tsc src/index.ts --declaration --outDir ./lib",
+    "test": "mocha -r ts-node/register test/**/*.spec.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mentatxx/class-validator-is-nullable.git"
+  },
+  "keywords": [
+    "validator",
+    "validation",
+    "typescript",
+    "typescript-validator",
+    "class-validator",
+    "nullable"
+  ],
+  "author": {
+    "name": "Alexey Petushkov",
+    "email": "mentatxx@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mentatxx/class-validator-is-nullable/issues"
+  },
+  "homepage": "https://github.com/mentatxx/class-validator-is-nullable#readme",
+  "peerDependencies": {
+    "class-validator": "^0.8.5"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.4",
+    "chai": "^4.1.2",
+    "class-validator": "^0.8.5",
+    "mocha": "^5.2.0",
+    "ts-node": "^7.0.0"
+  }
+}
