@@ -1,0 +1,41 @@
+import "es6-shim";
+import "mocha";
+
+import { IsNotEmpty, Validator } from "class-validator";
+
+import { IsNullable } from "../src";
+import { expect } from "chai";
+
+const validator = new Validator();
+
+describe("IsNullable", function () {
+    it("shouldn't validate a property when field is null", function () {
+        class MyClass {
+            @IsNullable()
+            @IsNotEmpty()
+            title: string = null;
+        }
+
+        const model = new MyClass();
+        return validator.validate(model).then(errors => {
+            expect(errors.length).to.equal(0);
+        });
+    });
+
+    it("should validate a property when field is not null", function () {
+        class MyClass {
+            @IsNullable()
+            @IsNotEmpty()
+            title: string = "";
+        }
+
+        const model = new MyClass();
+        return validator.validate(model).then(errors => {
+            expect(errors.length).to.equal(1);
+            expect(errors[0].target).to.equal(model);
+            expect(errors[0].property).to.equal("title");
+            expect(errors[0].constraints).to.eql({ isNotEmpty: "title should not be empty" });
+            expect(errors[0].value).to.equal("");
+        });
+    });
+});
