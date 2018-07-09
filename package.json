@@ -1,11 +1,12 @@
 {
   "name": "class-validator-is-nullable",
-  "version": "0.8.5",
+  "version": "0.8.5.1",
   "description": "@IsNullable validator for class-validator",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
     "build": "tsc src/index.ts --declaration --outDir ./lib",
+    "prepublishOnly": "npm run build",    
     "test": "mocha -r ts-node/register test/**/*.spec.ts"
   },
   "repository": {
