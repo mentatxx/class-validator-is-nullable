@@ -1,6 +1,6 @@
 {
   "name": "class-validator-is-nullable",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "@IsNullable validator for class-validator",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
