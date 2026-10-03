@@ -1,41 +1,115 @@
-import "es6-shim";
-import "mocha";
-
-import { IsNotEmpty, Validator } from "class-validator";
+import "reflect-metadata";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+import { IsNotEmpty, IsString, MinLength } from "class-validator";
 
 import { IsNullable } from "../src";
-import { expect } from "chai";
+import { expectErrors, expectNotEmpty } from "./expect-errors";
 
-const validator = new Validator();
-
-describe("IsNullable", function () {
-    it("shouldn't validate a property when field is null", function () {
+describe("IsNullable", () => {
+    it("should not validate a property when the value is null", async () => {
         class MyClass {
             @IsNullable()
             @IsNotEmpty()
-            title: string = null;
+            title: string | null = null;
         }
 
         const model = new MyClass();
-        return validator.validate(model).then(errors => {
-            expect(errors.length).to.equal(0);
+        await expectErrors(model, errors => {
+            assert.equal(errors.length, 0);
         });
     });
 
-    it("should validate a property when field is not null", function () {
+    it("should validate a property when the value is not null", async () => {
         class MyClass {
             @IsNullable()
             @IsNotEmpty()
-            title: string = "";
+            title: string | null = "";
         }
 
         const model = new MyClass();
-        return validator.validate(model).then(errors => {
-            expect(errors.length).to.equal(1);
-            expect(errors[0].target).to.equal(model);
-            expect(errors[0].property).to.equal("title");
-            expect(errors[0].constraints).to.eql({ isNotEmpty: "title should not be empty" });
-            expect(errors[0].value).to.equal("");
+        await expectErrors(model, errors => {
+            assert.equal(errors[0].target, model);
+            expectNotEmpty(errors, "title", "");
         });
+    });
+
+    it("should still validate undefined", async () => {
+        class MyClass {
+            @IsNullable()
+            @IsNotEmpty()
+            title: string | null | undefined = undefined;
+        }
+
+        await expectErrors(new MyClass(), errors => {
+            expectNotEmpty(errors, "title", undefined);
+        });
+    });
+
+    it("should accept a valid string", async () => {
+        class MyClass {
+            @IsNullable()
+            @IsNotEmpty()
+            title: string | null = "ok";
+        }
+
+        await expectErrors(new MyClass(), errors => {
+            assert.equal(errors.length, 0);
+        });
+    });
+
+    it("should skip every other validator when the value is null", async () => {
+        class MyClass {
+            @IsNullable()
+            @IsString()
+            @MinLength(2)
+            title: string | null = null;
+        }
+
+        await expectErrors(new MyClass(), errors => {
+            assert.equal(errors.length, 0);
+        });
+    });
+
+    it("should run every other validator when the value is not null", async () => {
+        class MyClass {
+            @IsNullable()
+            @IsString()
+            @MinLength(2)
+            title: string | null = "a";
+        }
+
+        await expectErrors(new MyClass(), errors => {
+            assert.equal(errors.length, 1);
+            assert.equal(errors[0].property, "title");
+            assert.equal(errors[0].value, "a");
+            assert.deepEqual(errors[0].constraints, {
+                minLength: "title must be longer than or equal to 2 characters"
+            });
+        });
+    });
+
+    it("should apply the null skip only for the given group", async () => {
+        class MyClass {
+            @IsNullable({ groups: ["create"] })
+            @IsNotEmpty({ always: true })
+            title: string | null = null;
+        }
+
+        const skipped = new MyClass();
+        await expectErrors(skipped, errors => {
+            assert.equal(errors.length, 0);
+        }, { groups: ["create"] });
+
+        const checked = new MyClass();
+        await expectErrors(checked, errors => {
+            expectNotEmpty(errors, "title", null);
+        }, { groups: ["update"] });
+
+        const empty = new MyClass();
+        empty.title = "";
+        await expectErrors(empty, errors => {
+            expectNotEmpty(errors, "title", "");
+        }, { groups: ["create"] });
     });
 });

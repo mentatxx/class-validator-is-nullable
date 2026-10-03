@@ -1,13 +1,23 @@
 {
   "name": "class-validator-is-nullable",
-  "version": "0.8.9",
-  "description": "@IsNullable validator for class-validator",
+  "version": "1.0.0",
+  "description": "@IsNullable and @IsUndefinable decorators for class-validator",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    }
+  },
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "build": "tsc src/index.ts --declaration --outDir ./lib",
+    "build": "tsc -p tsconfig.json",
     "prepublishOnly": "npm run build",
-    "test": "mocha -r ts-node/register test/**/*.spec.ts"
+    "test": "tsx --tsconfig tsconfig.tsx.json --test test/*.spec.ts",
+    "examples": "tsx --tsconfig tsconfig.tsx.json examples/nullable.ts && tsx --tsconfig tsconfig.tsx.json examples/undefinable.ts && tsx --tsconfig tsconfig.tsx.json examples/groups.ts"
   },
   "repository": {
     "type": "git",
@@ -19,7 +29,8 @@
     "typescript",
     "typescript-validator",
     "class-validator",
-    "nullable"
+    "nullable",
+    "undefinable"
   ],
   "author": {
     "name": "Alexey Petushkov",
@@ -30,17 +41,18 @@
     "url": "https://github.com/mentatxx/class-validator-is-nullable/issues"
   },
   "homepage": "https://github.com/mentatxx/class-validator-is-nullable#readme",
+  "engines": {
+    "node": ">=18"
+  },
   "peerDependencies": {
-    "class-validator": "^0.11.0"
+    "class-validator": ">=0.14.0",
+    "reflect-metadata": ">=0.1.13"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.4",
-    "@types/mocha": "^5.2.4",
-    "chai": "^4.1.2",
-    "class-validator": "^0.8.5",
-    "es6-shim": "^0.35.3",
-    "mocha": "^8.0.1",
-    "ts-node": "^7.0.0",
-    "typescript": "^2.9.2"
+    "@types/node": "^24.0.0",
+    "class-validator": "^0.15.1",
+    "reflect-metadata": "^0.2.2",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
   }
 }
